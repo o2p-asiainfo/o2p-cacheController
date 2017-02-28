@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       ">
+                
+    <bean id="common-dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass">
+            <value>${o2pCommon.jdbcDriver}</value>
+        </property>
+        <property name="jdbcUrl">
+            <value>${o2pCommon.database}</value>
+        </property>
+        <property name="user">
+            <value>${o2pCommon.user}</value>
+        </property>
+        <property name="password">
+            <value>${o2pCommon.password}</value>
+        </property>
+        <property name="maxPoolSize">
+            <value>${o2pCommon.maxIdle}</value>
+        </property>
+        <property name="minPoolSize">
+            <value>${o2pCommon.minIdle}</value>
+        </property>
+        <property name="initialPoolSize">
+            <value>${o2pCommon.initialSize}</value>
+        </property>
+        <property name="acquireRetryDelay">
+            <value>${o2pCommon.maxWait}</value>
+        </property>
+        <property name="breakAfterAcquireFailure">
+            <value>${o2pCommon.breakAfterAcquireFailure}</value>
+        </property>
+        <property name="testConnectionOnCheckout">
+            <value>${o2pCommon.testConnectionOnCheckout}</value>
+        </property>
+        <property name="testConnectionOnCheckin">
+            <value>${o2pCommon.testConnectionOnCheckin}</value>
+        </property>
+        <property name="idleConnectionTestPeriod">
+            <value>${o2pCommon.idleConnectionTestPeriod}</value>
+        </property>
+        <property name="acquireRetryAttempts">
+            <value>${o2pCommon.acquireRetryAttempts}</value>
+        </property>
+    </bean>
+    <bean id="commonLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"/>
+    
+    <!-- <bean id="commonSqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean" abstract="false" scope="singleton" lazy-init="default" autowire="default">
+        <description>Spring iBatis结合</description>
+        <property name="configLocation" value="classpath:config-sqlMap-config.xml"/>
+        <property name="dataSource" ref="common-dataSource"/>
+        <property name="lobHandler" ref="commonLobHandler"/>
+    </bean>
+    
+    <bean id="commonIBatisSqlMapDAO" class="com.linkage.rainbow.dao.impl.IBatisSqlMapDAOImpl" scope="prototype" >
+        <description>数据库基础操作工具包</description>
+        <property name="sqlMapClient" ref="commonSqlMapClient"/>
+    </bean>
+    
+    <bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+        <property name="sqlMapClient" ref="commonSqlMapClient" />
+    </bean>-->
+    
+    <bean id="dynamicJdbcDao" class="com.asiainfo.integretion.o2p.cachecontroller.dao.impl.DynamicJdbcDaoImpl">
+        <property name="sqlSessionTemplate"><ref bean="sqlSessionTemplate"/></property>
+    </bean>
+    
+    <bean id="transformerRuleDao" class="com.asiainfo.integretion.o2p.cachecontroller.dao.impl.TransformerRuleDaoImpl">
+        <property name="sqlSessionTemplate" ref="sqlSessionTemplate"></property>
+    </bean>
+    
+    
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="common-dataSource" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:ibatis/model/dataSource-sqlmap.xml</value>
+				<value>classpath:ibatis/model/international-sqlmap.xml</value>
+				<value>classpath:ibatis/model/loadCommon-sqlmap.xml</value>
+				<value>classpath:ibatis/model/ratingRule-sqlmap.xml</value>
+				<value>classpath:ibatis/model/transformerRule-sqlmap.xml</value>
+			</list>
+		</property>
+		<property name="databaseIdProvider" ref="databaseIdProvider"></property>
+	</bean>
+	
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<bean id="databaseIdProvider" class="org.apache.ibatis.mapping.VendorDatabaseIdProvider">
+		<property name="properties" ref="vendorProperties"></property>
+	</bean>
+	
+	<bean id="vendorProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	    <property name="properties">
+	      <props>
+	        <prop key="Oracle">oracle</prop>
+	        <prop key="MySQL">mysql</prop>
+	        <prop key="HSQL Database Engine">hsqldb</prop>
+	      </props>
+	    </property>
+	 </bean>
+            
+    <bean class="com.ailk.eaap.o2p.common.spring.config.O2pPropertyPlaceholderConfigurer">
+        <property name="remoteOverride" value="true"></property>
+        <property name="cacheHolder" ref="cacheHolder"></property>
+    </bean>
+    
+    <bean id="cacheHolder" class="com.ailk.eaap.o2p.common.spring.config.ZKCfgCacheHolder">
+        <property name="ignoreResourceNotFound" value="true"></property>
+    </bean>
+
+    <bean name="cacheThreades" class="com.asiainfo.integretion.o2p.cachecontroller.common.CacheThread">
+        <property name="refreshTime"><value>${cache.refresh.time}</value></property>
+        <property name="synTransIdTime"><value>${cache.synchronize.transId.time}</value></property>
+        <property name="reloadCache"><ref bean="reloadCache"/></property>
+    </bean>
+    <bean name="synTransIdTheades" class="com.asiainfo.integretion.o2p.cachecontroller.common.CacheThread">
+        <property name="refreshTime"><value>${cache.refresh.time}</value></property>
+        <property name="synTransIdTime"><value>${cache.synchronize.transId.time}</value></property>
+        <property name="reloadCache"><ref bean="reloadCache"/></property>
+    </bean>
+    <bean name="synBillingCycleTheades" class="com.asiainfo.integretion.o2p.cachecontroller.common.CacheThread">
+        <property name="synBillingCycleTime"><value>${cache.synchronize.billingCycle.time}</value></property>
+        <property name="reloadCache"><ref bean="reloadCache"/></property>
+    </bean>
+</beans>

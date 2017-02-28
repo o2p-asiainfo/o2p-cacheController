@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Thu Aug 04 17:21:39 CST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ratingRule">
+	
+	<resultMap id="APIBaseTariffBillMap" type="com.ailk.eaap.op2.bo.BaseTariff">
+		<result property="priceId" column="price_id" jdbcType="BIGINT"/>
+		<result property="ratingUnitType" column="rating_unit_type" jdbcType="BIGINT"/>
+		<association property="billInfoList" select="ratingRule.selectAPIRatingCurverDetailByPriceId" column="price_id"/>
+	</resultMap>
+	
+	<resultMap id="APIRatingCurverDetailMap" type="com.ailk.eaap.op2.bo.RatingCurverDetail">
+		<result property="ratingCurveId" column="rating_curve_id" jdbcType="BIGINT"/>
+		<result property="priceId" column="price_id" jdbcType="BIGINT"/>
+		<result property="startval" column="start_val" jdbcType="BIGINT"/>
+		<result property="endVal" column="end_Val" jdbcType="BIGINT"/>
+		<result property="rateVal" column="rate_Val" jdbcType="BIGINT"/>
+		<result property="baseVal" column="base_Val" jdbcType="BIGINT"/>
+		<result property="numerator" column="numerator" jdbcType="BIGINT"/>
+		<result property="denominator" column="denominator" jdbcType="BIGINT"/>
+	</resultMap>
+	
+	<resultMap id="APIRecurringFeeMap" type="com.ailk.eaap.op2.bo.RecurringFee">
+		<result property="priceId" column="price_id" jdbcType="BIGINT"/>
+		<result property="priceName" column="price_name" jdbcType="CHAR"/>
+		<result property="taxIncluded" column="tax_included" jdbcType="CHAR"/>
+		<result property="billingPriority" column="billing_priority" jdbcType="BIGINT"/>
+		<result property="currencyUnitType" column="currency_unit_type" jdbcType="BIGINT"/>
+		<result property="currencyUnitValue" column="currency_unit_val" jdbcType="BIGINT"/>
+	</resultMap>
+	
+
+	<resultMap id="APISalesIntoMap" type="com.ailk.eaap.op2.bo.SalesInto">
+		<result property="priceId" column="price_id" jdbcType="BIGINT"/>
+		<result property="currencyUnitType" column="currency_unit_type" jdbcType="BIGINT"/>
+		<result property="freeAmount" column="free_amount" jdbcType="BIGINT"/>
+		<result property="partyUseRation" column="party_use_ration" jdbcType="BIGINT"/>
+	</resultMap>
+	
+	<resultMap id="APIBillingDiscountMap" type="com.ailk.eaap.op2.bo.BillingDiscount">
+		<result property="priceId" column="price_id" jdbcType="BIGINT"/>
+		<result property="currencyUnitType" column="currency_unit_type" jdbcType="BIGINT"/>
+		<result property="promType" column="prom_type" jdbcType="BIGINT"/>
+		<result property="eligibleItem" column="eligible_item" jdbcType="BIGINT"/>
+		<result property="targetItem" column="target_item" jdbcType="BIGINT"/>
+		<result property="billingPriority" column="billing_priority" jdbcType="BIGINT"/>
+		<result property="maxiMum" column="maximum" jdbcType="BIGINT"/>
+		<result property="calcType" column="calc_type" jdbcType="CHAR"/>
+		<result property="precisionRound" column="precision_round" jdbcType="CHAR"/>
+		<result property="taxIncluded" column="tax_included" jdbcType="CHAR"/>
+		<association property="discountInfoList" select="ratingRule.selectAPIRatingCurverDetailByPriceId" column="price_id"/>
+	</resultMap>
+	
+	<resultMap id="APIPricePlanMap" type="com.ailk.eaap.op2.bo.PricePlan">
+		<result property="pricingInfoId" column="pricing_info_id" jdbcType="BIGINT"/>
+		<result property="pricingName" column="pricing_name" jdbcType="CHAR"/>
+		<result property="createDate" column="create_date" jdbcType="DATE"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<result property="statusDate" column="status_date" jdbcType="DATE"/>
+		<result property="effDate" column="eff_date" jdbcType="DATE"/>
+		<result property="expDate" column="exp_date" jdbcType="DATE"/>
+		<result property="isMain" column="is_main" jdbcType="CHAR"/>
+		<result property="billingPriority" column="billing_priority" jdbcType="BIGINT"/>
+		<result property="cycleType" column="cycle_type" jdbcType="BIGINT"/>
+		<result property="cycleUnit" column="cycle_unit" jdbcType="BIGINT"/>
+		<result property="applicType" column="applic_type" jdbcType="BIGINT"/>
+		<result property="licenseNbr" column="license_nbr" jdbcType="BIGINT"/>
+
+		<association property="componentPriceList" select="ratingRule.selectAPIComponentPriceByPricingInfoId" column="pricing_info_id"/>
+	</resultMap>
+	
+	<resultMap id="APIProdOfferPricingMap" type="com.ailk.eaap.op2.bo.ProdOfferPricing">
+		<result property="prodOfferPricingId" column="prod_offer_pricing_id" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="prod_offer_id" jdbcType="DECIMAL"/>
+		<result property="pricingInfoId" column="pricing_info_id" jdbcType="BIGINT"/>
+		<result property="pricingTargetId" column="pricing_target_id" jdbcType="BIGINT"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<result property="pricingType" column="pricing_type" jdbcType="CHAR"/>
+		<association property="pricePlanList" select="ratingRule.selectAPIPricePlanByPricingInfoId" column="pricing_info_id"/>
+		<association property="pricingTarget" select="ratingRule.selectAPIPricingTargetByPricingTargetId" column="pricing_target_id"/>
+	</resultMap>
+	
+	<resultMap id="APIProdOfferMap" type="com.ailk.eaap.op2.bo.ProdOffer">
+		<result property="prodOfferId" column="prod_offer_id" jdbcType="DECIMAL"/>
+		<result property="offerType" column="offer_type" jdbcType="CHAR"/>
+		<result property="prodOfferName" column="prod_offer_name" jdbcType="CHAR"/>
+		<result property="innerOfferName" column="inner_offer_name" jdbcType="CHAR"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<result property="effDate" column="eff_date" jdbcType="DATE"/>
+		<result property="expDate" column="exp_date" jdbcType="DATE"/>
+		<result property="offerNbr" column="offer_nbr" jdbcType="CHAR"/>
+		<result property="brandId" column="brand_id" jdbcType="CHAR"/>
+		<result property="servBrandId" column="serv_brand_id" jdbcType="CHAR"/>
+		<result property="templetId" column="templet_id" jdbcType="BIGINT"/>
+		<result property="defaultTimePeriod" column="default_time_period" jdbcType="BIGINT"/>
+		<result property="extProdOfferId" column="ext_prod_offer_id" jdbcType="CHAR"/>
+		<result property="expProcMethod" column="exp_proc_method" jdbcType="CHAR"/>
+		<result property="valueAddedFlag" column="value_added_flag" jdbcType="CHAR"/>
+		<result property="manageGrade" column="manage_grade" jdbcType="CHAR"/>
+		<result property="prodOfferInitialamount" column="prod_offer_initialamount" jdbcType="CHAR"/>
+		<result property="expireHandleCondition" column="expire_handle_condition" jdbcType="CHAR"/>
+		<result property="innerOfferNbr" column="inner_offer_nbr" jdbcType="CHAR"/>
+		<result property="cooperationType" column="cooperation_type" jdbcType="CHAR"/>
+		<association property="prodOfferPricingList" select="ratingRule.selectAPIProdOfferPricingByProdOfferId" column="prod_offer_id"/>
+	</resultMap>
+	
+	<resultMap id="APIApiMap" type="com.ailk.eaap.op2.bo.Api">
+		<result property="apiId" column="api_id" jdbcType="BIGINT"/>
+		<result property="serviceId" column="service_id" jdbcType="BIGINT"/>
+		<result property="apiName" column="api_name" jdbcType="CHAR"/>
+		<result property="apiVersion" column="api_version" jdbcType="CHAR"/>
+		<result property="orgId" column="org_id" jdbcType="BIGINT"/>
+		<result property="apiState" column="api_state" jdbcType="CHAR"/>
+		<result property="apiRegTime" column="api_reg_time" jdbcType="DATE"/>
+		<result property="apiEnableTime" column="api_enable_time" jdbcType="DATE"/>
+		<result property="apiDisableTime" column="api_disable_time" jdbcType="DATE"/>
+		<result property="apiMethod" column="api_method" jdbcType="CHAR"/>
+		<association property="serviceProductRela" select="ratingRule.selectAPIServiceProductRelaByServiceId" column="service_id"/>
+	</resultMap>
+	
+	<resultMap id="APIComponentPriceMap" type="com.ailk.eaap.op2.bo.ComponentPrice">
+		<result property="priceId" column="price_id" jdbcType="BIGINT"/>
+		<result property="priceName" column="price_name" jdbcType="CHAR"/>
+		<result property="priceType" column="price_type" jdbcType="CHAR"/>
+		<result property="priPricingInfoId" column="pri_pricing_info_id" jdbcType="BIGINT"/>
+		<result property="version" column="version" jdbcType="DATE"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<result property="statusDate" column="status_date" jdbcType="DATE"/>
+		<result property="effDate" column="eff_date" jdbcType="DATE"/>
+		<result property="expDate" column="exp_date" jdbcType="DATE"/>
+		<association property="recurringFee" select="ratingRule.selectAPIRecurringFeeByPricingId" column="price_id"/>
+		<association property="basicTariff" select="ratingRule.selectAPIBasicTariffByPriceId" column="price_id"/>
+		<association property="billingDiscount" select="ratingRule.selectAPIBillingDiscountByPriceId" column="price_id"/>
+		<association property="salesInfo" select="ratingRule.selectAPISalesIntoByPricingId" column="price_id"/>
+	</resultMap>
+	
+	<resultMap id="APIBasicTariffMap" type="com.ailk.eaap.op2.bo.BasicTariff">
+		<result property="priceId" column="price_id" jdbcType="BIGINT"/>
+		<result property="priceName" column="price_name" jdbcType="CHAR"/>
+		<result property="taxIncluded" column="tax_included" jdbcType="CHAR"/>
+		<result property="baseItemType" column="base_item_type" jdbcType="BIGINT"/>
+		<result property="ratingUnitVal" column="rating_unit_val" jdbcType="BIGINT"/>
+		<result property="ratingUnitType" column="rating_unit_type" jdbcType="BIGINT"/>
+		<result property="precisionRound" column="precision_round" jdbcType="CHAR"/>
+		<result property="currencyUnitType" column="currency_unit_type" jdbcType="BIGINT"/>
+		<result property="rateType" column="rate_type" jdbcType="BIGINT"/>
+		<result property="version" column="version" jdbcType="DATE"/>
+		<!-- <result property="itemName" column="item_name" jdbcType="CHAR" /> -->
+		<association property="ratingCurverDetailList" select="ratingRule.selectAPIRatingCurverDetailByPriceId" column="price_id"/>
+	</resultMap>
+	
+	<resultMap id="APIOrgMap" type="com.ailk.eaap.op2.bo.Org">
+		<result property="orgId" column="org_id" jdbcType="BIGINT"/>
+		<result property="orgTypeCode" column="org_type_code" jdbcType="CHAR"/>
+		<result property="name" column="name" jdbcType="CHAR"/>
+		<result property="orgCode" column="org_code" jdbcType="CHAR"/>
+		<result property="certTypeCode" column="cert_type_code" jdbcType="CHAR"/>
+		<result property="simpleSpell" column="simple_spell" jdbcType="CHAR"/>
+		<result property="state" column="state" jdbcType="CHAR"/>
+		<result property="customerId" column="customer_id" jdbcType="CHAR"/>
+		<result property="accountId" column="account_id" jdbcType="CHAR"/>
+		<result property="areaId" column="area_id" jdbcType="BIGINT"/>
+
+		<association property="orgOfferOrderRelaList" select="ratingRule.selectAPIOrgOfferOrderRelaByOrgId" column="org_id"/>
+	</resultMap>
+	
+	<resultMap id="APIOrgOfferOrderRelaMap" type="com.ailk.eaap.op2.bo.OrgOfferOrderRela">
+		<result property="offerApiRelaId" column="OFFER_API_RELA_ID" jdbcType="BIGINT"/>
+		<result property="orgId" column="ORG_ID" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="PROD_OFFER_ID" jdbcType="DECIMAL"/>
+		<result property="orderTime" column="ORDER_TIME" jdbcType="DATE"/>
+		<result property="effTime" column="EFF_TIME" jdbcType="DATE"/>
+		<result property="expTime" column="EXP_TIME" jdbcType="DATE"/>
+		<result property="useUnit" column="USE_UNIT" jdbcType="BIGINT"/>
+		<result property="cancelTime" column="CANCEL_TIME" jdbcType="DATE"/>
+		<result property="appId" column="APP_ID" jdbcType="BIGINT"/>
+		<association property="apiPricingCaseList" select="ratingRule.selectAPIPricingCaseByPricingCaseId" column="OFFER_API_RELA_ID"/>
+	</resultMap>
+	
+	
+	<resultMap id="APIPricingCaseMap" type="com.asiainfo.integration.o2p.billing.APIPricingCase">
+		<result property="pricingCaseId" column="PRICING_CASE_ID" jdbcType="BIGINT"/>
+		<result property="offerApiRelaId" column="OFFER_API_RELA_ID" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="PROD_OFFER_ID" jdbcType="DECIMAL"/>
+		<result property="pricingInfoId" column="PRICING_INFO_ID" jdbcType="BIGINT"/>
+		<result property="effTime" column="EFF_TIME" jdbcType="DATE"/>
+		<result property="expTime" column="EXP_TIME" jdbcType="DATE"/>
+	</resultMap>
+	
+
+	
+	<resultMap id="APIServiceProductRelaMap" type="com.ailk.eaap.op2.bo.ServiceProductRela">
+		<result property="serviceProductId" column="SERVICE_PRODUCT_REAL_ID" jdbcType="BIGINT"/>
+		<result property="productId" column="PRODUCT_ID" jdbcType="DECIMAL"/>
+		<result property="serviceId" column="SERVICE_ID" jdbcType="BIGINT"/>
+		<association property="product" select="ratingRule.selectAPIProductByProductId" column="PRODUCT_ID"/>
+	</resultMap>
+	
+	<resultMap id="APIProductMap" type="com.ailk.eaap.op2.bo.Product">
+		<result property="productId" column="product_id" jdbcType="DECIMAL"/>
+		<result property="productNbr" column="product_nbr" jdbcType="CHAR"/>
+		<result property="manageGrade" column="manage_grade" jdbcType="CHAR"/>
+		<result property="productType" column="product_type" jdbcType="CHAR"/>
+		<result property="productProviderId" column="product_provider_id" jdbcType="BIGINT"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<result property="statusDate" column="status_date" jdbcType="DATE"/>
+		<result property="effDate" column="eff_date" jdbcType="DATE"/>
+		<result property="expDate" column="exp_date" jdbcType="DATE"/>
+		<result property="prodFuncType" column="prod_func_type" jdbcType="CHAR"/>
+		<result property="extProdId" column="ext_prod_id" jdbcType="CHAR"/>
+		<result property="valueAddedFlag" column="value_added_flag" jdbcType="CHAR"/>
+		<result property="innerProdNbr" column="inner_prod_nbr" jdbcType="CHAR"/>
+		<result property="commonRegionId" column="common_region_id" jdbcType="BIGINT"/>
+		<result property="isTemplate" column="is_template" jdbcType="CHAR"/>
+		<result property="cooperationType" column="cooperation_type" jdbcType="CHAR"/>
+		<association property="offerProdRelList" select="ratingRule.selectAPIOfferProdRelByProductId" column="PRODUCT_ID"/>
+	</resultMap>
+	<resultMap id="APIProductServiceRelMap" type="com.ailk.eaap.op2.bo.Product">
+		<result property="productId" column="product_id" jdbcType="DECIMAL"/>
+		<result property="productNbr" column="product_nbr" jdbcType="CHAR"/>
+		<result property="manageGrade" column="manage_grade" jdbcType="CHAR"/>
+		<result property="productType" column="product_type" jdbcType="CHAR"/>
+		<result property="productProviderId" column="product_provider_id" jdbcType="BIGINT"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<result property="statusDate" column="status_date" jdbcType="DATE"/>
+		<result property="effDate" column="eff_date" jdbcType="DATE"/>
+		<result property="expDate" column="exp_date" jdbcType="DATE"/>
+		<result property="prodFuncType" column="prod_func_type" jdbcType="CHAR"/>
+		<result property="extProdId" column="ext_prod_id" jdbcType="CHAR"/>
+		<result property="valueAddedFlag" column="value_added_flag" jdbcType="CHAR"/>
+		<result property="innerProdNbr" column="inner_prod_nbr" jdbcType="CHAR"/>
+		<result property="commonRegionId" column="common_region_id" jdbcType="BIGINT"/>
+		<result property="isTemplate" column="is_template" jdbcType="CHAR"/>
+		<result property="cooperationType" column="cooperation_type" jdbcType="CHAR"/>
+		<!-- <result property="offerProdRelList" column="PRODUCT_ID" -->
+		<!-- select="ratingRule.selectAPIOfferProdRelByProductId" jdbcType="DECIMAL" 
+			/> -->
+	</resultMap>
+	
+	<resultMap id="APIOfferProdRelMap" type="com.ailk.eaap.op2.bo.OfferProdRel">
+		<result property="offerProdRelaId" column="offer_prod_rela_id" jdbcType="BIGINT"/>
+		<result property="roleCd" column="role_cd" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="prod_offer_id" jdbcType="DECIMAL"/>
+		<result property="productId" column="product_id" jdbcType="DECIMAL"/>
+		<result property="maxCount" column="max_count" jdbcType="BIGINT"/>
+		<result property="minCount" column="min_count" jdbcType="BIGINT"/>
+		<result property="ruleType" column="rule_type" jdbcType="CHAR"/>
+		<result property="defaultCount" column="default_count" jdbcType="BIGINT"/>
+		<result property="prodExistType" column="prod_exist_type" jdbcType="CHAR"/>
+		<result property="compoentType" column="compoent_type" jdbcType="CHAR"/>
+		<association property="prodOffer" select="ratingRule.selectAPIProdOfferByProdOfferId" column="prod_offer_id"/>
+	</resultMap>
+	<resultMap id="APIOfferProdRelToProductMap" type="com.ailk.eaap.op2.bo.OfferProdRel">
+		<result property="offerProdRelaId" column="offer_prod_rela_id" jdbcType="BIGINT"/>
+		<result property="roleCd" column="role_cd" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="prod_offer_id" jdbcType="DECIMAL"/>
+		<result property="productId" column="product_id" jdbcType="DECIMAL"/>
+		<result property="maxCount" column="max_count" jdbcType="BIGINT"/>
+		<result property="minCount" column="min_count" jdbcType="BIGINT"/>
+		<result property="ruleType" column="rule_type" jdbcType="CHAR"/>
+		<result property="defaultCount" column="default_count" jdbcType="BIGINT"/>
+		<result property="prodExistType" column="prod_exist_type" jdbcType="CHAR"/>
+		<result property="compoentType" column="compoent_type" jdbcType="CHAR"/>
+		<association property="product" select="ratingRule.selectAPIProdOfferToProductByProductId" column="product_id"/>
+	</resultMap>
+
+	
+	<resultMap id="APIBillingCycleMap" type="com.ailk.eaap.op2.bo.BillingCycle">
+		<result property="orgId" column="org_id" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="prod_offer_id" jdbcType="DECIMAL"/>
+		<result property="pricingInfoId" column="pricing_info_id" jdbcType="BIGINT"/>
+		<result property="componentPriceId" column="component_price_id" jdbcType="BIGINT"/>
+		<result property="apiId" column="api_id" jdbcType="BIGINT"/>
+		<result property="effDate" column="eff_date" jdbcType="DATE"/>
+		<result property="expDate" column="exp_date" jdbcType="DATE"/>
+		<result property="useUnit" column="use_unit" jdbcType="BIGINT"/>
+	</resultMap>
+	
+	<resultMap id="APIPricingTargetMap" type="com.ailk.eaap.op2.bo.PricingTarget">
+		<result property="pricingTargetId" column="pricing_target_id" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="prod_offer_id" jdbcType="DECIMAL"/>
+		<result property="pricingTargetName" column="pricing_target_name" jdbcType="CHAR"/>
+		<result property="pricingTargetType" column="pricing_target_type" jdbcType="CHAR"/>
+		<result property="createDate" column="create_date" jdbcType="DATE"/>
+		<result property="statusDate" column="status_date" jdbcType="DATE"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<association property="offerProdRelPricingList" select="ratingRule.selectAPIOfferProdRelPricingByPricingTargetId" column="pricing_target_id"/>
+	</resultMap>
+	
+	<resultMap id="APIOfferProdRelPricingMap" type="com.ailk.eaap.op2.bo.OfferProdRelPricing">
+		<result property="offerProdRelPricingId" column="offer_prod_rel_pricing_id" jdbcType="BIGINT"/>
+		<result property="offerProdRelaId" column="offer_prod_rela_id" jdbcType="BIGINT"/>
+		<result property="pricingTargetId" column="pricing_target_id" jdbcType="BIGINT"/>
+		<result property="pricingInfoId" column="pricing_info_id" jdbcType="BIGINT"/>
+		<result property="createDate" column="create_date" jdbcType="DATE"/>
+		<result property="statusDate" column="status_date" jdbcType="DATE"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<association property="offerProdRel" select="ratingRule.selectAPIOfferProdRelByOfferProdRelaId" column="offer_prod_rela_id"/>
+	</resultMap>
+	
+	<resultMap id="APIApiProductProdOfferOrgRelaMap" type="com.asiainfo.integration.o2p.billing.ApiProductProdOfferOrgRela">
+		<result property="orgId" column="org_id" jdbcType="BIGINT"/>
+		<result property="appId" column="app_id" jdbcType="BIGINT"/>
+		<result property="apiId" column="api_id" jdbcType="BIGINT"/>
+		<result property="apiName" column="api_name" jdbcType="CHAR"/>
+		<result property="productId" column="product_id" jdbcType="DECIMAL"/>
+		<result property="offerProdRelaId" column="offer_prod_rela_id" jdbcType="BIGINT"/>
+		<result property="prodOfferId" column="prod_offer_id" jdbcType="DECIMAL"/>
+		<result property="offerType" column="offer_type" jdbcType="CHAR"/>
+		<result property="prodOfferName" column="prod_offer_name" jdbcType="CHAR"/>
+		<result property="statusCd" column="status_cd" jdbcType="CHAR"/>
+		<result property="effDate" column="eff_date" jdbcType="DATE"/>
+		<result property="expDate" column="exp_date" jdbcType="DATE"/>
+		<result property="offerNbr" column="offer_nbr" jdbcType="CHAR"/>
+		<result property="brandId" column="brand_id" jdbcType="CHAR"/>
+		<result property="servBrandId" column="serv_brand_id" jdbcType="CHAR"/>
+		<result property="templetId" column="templet_id" jdbcType="BIGINT"/>
+		<result property="defaultTimePeriod" column="default_time_period" jdbcType="BIGINT"/>
+		<result property="extProdOfferId" column="ext_prod_offer_id" jdbcType="CHAR"/>
+		<result property="expProcMethod" column="exp_proc_method" jdbcType="CHAR"/>
+		<result property="valueAddedFlag" column="value_added_flag" jdbcType="CHAR"/>
+		<result property="prodOfferInitialamount" column="prod_offer_initialamount" jdbcType="CHAR"/>
+		<result property="expireHandleCondition" column="expire_handle_condition" jdbcType="CHAR"/>
+		<result property="commonRegionId" column="common_region_id" jdbcType="BIGINT"/>
+		<result property="innerOfferNbr" column="inner_offer_nbr" jdbcType="CHAR"/>
+		<result property="cooperationType" column="cooperation_type" jdbcType="CHAR"/>
+	</resultMap>
+
+
+
+	<select id="selectAPIBaseTariffBill" resultMap="APIBaseTariffBillMap">
+		select
+		price_id,rating_unit_type from BASIC_TARIFF
+	</select>
+	<select id="selectAPIRatingCurverDetailByPriceId" resultMap="APIRatingCurverDetailMap">
+		select
+		rating_curve_id,price_id,start_val,end_Val,rate_Val,base_Val,numerator,denominator
+		from RATING_CURVE_DETAIL where price_id=#{price_id}
+	</select>
+	<select id="selectAPIRatingCurverDetail" resultMap="APIRatingCurverDetailMap">
+		select
+		rating_curve_id,price_id,start_val,end_Val,rate_Val,base_Val,numerator,denominator
+		from RATING_CURVE_DETAIL
+	</select>
+	<select id="selectAPIRecurringFee" resultMap="APIRecurringFeeMap">
+		select
+		price_id,price_name,tax_included,billing_priority,currency_unit_type,currency_unit_val
+		from RECURRING_FEE
+	</select>
+	<select id="selectAPIRecurringFeeByPricingId" resultMap="APIRecurringFeeMap">
+		select
+		price_id,price_name,tax_included,billing_priority,currency_unit_type,currency_unit_val
+		from RECURRING_FEE where price_id=#{price_id}
+	</select>
+	<select id="selectAPISalesIntoByPricingId" resultMap="APISalesIntoMap">
+		select
+		price_id,currency_unit_type,free_amount,party_use_ration from
+		SALES_INTO where price_id=#{price_id}
+	</select>
+	<select id="selectAPIBillingDiscountByPriceId" resultMap="APIBillingDiscountMap">
+		select
+		price_id,currency_unit_type,prom_type,eligible_item,target_item,billing_priority,maximum,calc_type,
+		precision_round,tax_included from BILLING_DISCOUNT where
+		price_id=#{price_id}
+	</select>
+	<select id="selectAPIPricePlan" resultMap="APIPricePlanMap">
+		select
+		pricing_info_id,pricing_name,create_date,status_cd,status_date,eff_date,exp_date,is_main,billing_priority,cycle_type,cycle_unit,applic_type,license_nbr
+		from PRICING_PLAN where status_cd='10'
+	</select>
+	<select id="selectAPIPricePlanByPricingInfoId" resultMap="APIPricePlanMap">
+		select
+		pricing_info_id,pricing_name,create_date,status_cd,status_date,eff_date,exp_date,is_main,billing_priority,cycle_type,cycle_unit,applic_type,license_nbr
+		from PRICING_PLAN where status_cd='10'   and
+		pricing_info_id=#{pricing_info_id}
+	</select>
+	<select id="selectAPIProdOfferPricing" resultMap="APIProdOfferPricingMap">
+		select
+		PROD_OFFER_PRICING_ID,PROD_OFFER_ID,PRICING_INFO_ID,PRICING_TARGET_ID,STATUS_CD,PRICING_TYPE
+		from PROD_OFFER_PRICING where STATUS_CD='10' and prod_offer_id in (select prod_offer_id from prod_offer  where status_cd = '1000'  and cooperation_type='13')
+	</select>
+	<select id="selectAPIProdOfferPricingByProdOfferId" resultMap="APIProdOfferPricingMap">
+		select
+		pop.PROD_OFFER_PRICING_ID,pop.PROD_OFFER_ID,pop.PRICING_INFO_ID,pop.PRICING_TARGET_ID,pop.STATUS_CD,pop.PRICING_TYPE
+		from PROD_OFFER_PRICING pop,pricing_plan pp where pop.STATUS_CD='10' and pop.pricing_info_id=pp.pricing_info_id AND
+		pop.PROD_OFFER_ID=#{PROD_OFFER_ID}
+       ORDER BY pp.BILLING_PRIORITY DESC
+	</select>
+	<select id="selectAPIProdOffer" parameterType="java.lang.String" resultMap="APIProdOfferMap">
+		select
+		prod_offer_id,offer_type,prod_offer_name,inner_offer_name,status_cd,eff_date,exp_date,offer_nbr,brand_id,
+		serv_brand_id,templet_id,default_time_period,ext_prod_offer_id,exp_proc_method,value_added_flag,manage_grade,
+		prod_offer_initialamount,expire_handle_condition,inner_offer_nbr,cooperation_type
+		from PROD_OFFER where status_cd = '1000'  and cooperation_type='13' 
+			 and  tenant_id=#{value}
+	</select>
+	<select id="selectAPIProdOfferByProdOfferId" resultMap="APIProdOfferMap">
+		select
+		prod_offer_id,offer_type,prod_offer_name,inner_offer_name,status_cd,eff_date,exp_date,offer_nbr,brand_id,
+		serv_brand_id,templet_id,default_time_period,ext_prod_offer_id,exp_proc_method,value_added_flag,manage_grade,
+		prod_offer_initialamount,expire_handle_condition,inner_offer_nbr,cooperation_type
+		from PROD_OFFER where status_cd = '1000' and cooperation_type='13' and
+		prod_offer_id=#{prod_offer_id}
+	</select>
+	<select id="selectAPIApi" parameterType="java.lang.String" resultMap="APIApiMap">
+		select api_id,service_id,api_name,api_version,org_id,api_state,api_reg_time,api_enable_time,api_disable_time,api_method from api where api_state='D' 
+			 and  tenant_id=#{value}
+	</select>
+	<select id="selectAPIComponentPriceByPricingInfoId" resultMap="APIComponentPriceMap">
+		select
+		price_id,price_name,price_type,pri_pricing_info_id,version,status_cd,status_date,eff_date,exp_date
+		from COMPONENT_PRICE where status_cd='10' and
+		pri_pricing_info_id=#{pricing_info_id}
+	</select>
+	<select id="selectAPIBasicTariffByPriceId" resultMap="APIBasicTariffMap">
+		select
+		price_id,price_name,tax_included,base_item_type,rating_unit_val,rating_unit_type,precision_round,
+		currency_unit_type,rate_type,version
+		from BASIC_TARIFF where
+		price_id=#{price_id}
+	</select>
+	<select id="selectAPIOrg" parameterType="java.lang.String" resultMap="APIOrgMap">
+		select
+		org_id,org_type_code,name,org_code,cert_type_code,simple_spell,state,customer_id,account_id,area_id
+		from Org where state='D' 
+		and  tenant_id=#{value}
+	</select>
+	<select id="selectAPIOrgOfferOrderRelaByOrgId" resultMap="APIOrgOfferOrderRelaMap">
+		select
+		OFFER_API_RELA_ID,ORG_ID,PROD_OFFER_ID,ORDER_TIME,EFF_TIME,EXP_TIME,USE_UNIT,CANCEL_TIME,APP_ID
+		from ORG_OFFER_ORDER_RELA where org_id=#{org_id}
+	</select>
+	
+	<select id="selectAPIPricingCaseByPricingCaseId" resultMap="APIPricingCaseMap">
+		select
+		PRICING_CASE_ID,OFFER_API_RELA_ID,PROD_OFFER_ID,PRICING_INFO_ID,EFF_TIME,EXP_TIME
+		from PRICING_CASE where OFFER_API_RELA_ID=#{OFFER_API_RELA_ID}
+	</select>
+
+
+	<select id="selectAPIServiceProductRela" resultMap="APIServiceProductRelaMap">
+		select
+		SERVICE_PRODUCT_REAL_ID,PRODUCT_ID,SERVICE_ID
+		from SERVICE_PRODUCT_REAL
+	</select>
+	<select id="selectAPIServiceProductRelaByServiceId" resultMap="APIServiceProductRelaMap">
+		select
+		SERVICE_PRODUCT_REAL_ID,PRODUCT_ID,SERVICE_ID
+		from
+		SERVICE_PRODUCT_REAL where service_id=#{service_id}
+	</select>
+	<select id="selectAPIProductByProductId" resultMap="APIProductMap">
+		select
+		product_id,product_nbr,manage_grade,product_type,product_provider_id,status_cd,status_date,eff_date,exp_date,
+		prod_func_type,ext_prod_id,value_added_flag,inner_prod_nbr,common_region_id,is_template,cooperation_type
+		from product where status_cd = '1000' and product_id=#{product_id}
+	</select>
+	<select id="selectAPIProdOfferToProductByProductId" resultMap="APIProductServiceRelMap">
+		select
+		product_id,product_nbr,manage_grade,product_type,product_provider_id,status_cd,status_date,eff_date,exp_date,
+		prod_func_type,ext_prod_id,value_added_flag,inner_prod_nbr,common_region_id,is_template,cooperation_type
+		from product where status_cd = '1000' and product_id=#{product_id}
+	</select>
+
+	<select id="selectAPIOfferProdRelByProductId" resultMap="APIOfferProdRelMap">
+		select
+		offer_prod_rela_id,role_cd,prod_offer_id,product_id,max_count,min_count,rule_type,default_count,prod_exist_type,compoent_type
+		from OFFER_PROD_REL where product_id=#{product_id}
+	</select>
+	<select id="selectAPIOfferProdRelByOfferProdRelaId" resultMap="APIOfferProdRelToProductMap">
+		select
+		offer_prod_rela_id,role_cd,prod_offer_id,product_id,max_count,min_count,rule_type,default_count,prod_exist_type,compoent_type
+		from OFFER_PROD_REL where offer_prod_rela_id=#{offer_prod_rela_id}
+	</select>
+	<select id="selectAPIBillingCycle" parameterType="java.lang.String" resultMap="APIBillingCycleMap">
+		select org_id,prod_offer_id,pricing_info_id,component_price_id,api_id,eff_date,exp_date,use_unit from Billing_Cycle 
+		 
+			 where tenant_id=#{value}
+	</select>
+	<select id="selectAPIPricingTargetByPricingTargetId" resultMap="APIPricingTargetMap">
+		select
+		pricing_target_id,prod_offer_id,pricing_target_name,pricing_target_type,create_date,status_date,status_cd
+		from pricing_target where status_cd = '10' and
+		pricing_target_id=#{pricing_target_id}
+	</select>
+	<select id="selectAPIOfferProdRelPricingByPricingTargetId" resultMap="APIOfferProdRelPricingMap">
+		select
+		offer_prod_rel_pricing_id,offer_prod_rela_id,pricing_target_id,pricing_info_id,create_date,status_date,status_cd
+		from OFFER_PROD_REL_PRICING where status_cd = '10' and
+		pricing_target_id=#{pricing_target_id}
+	</select>
+	<select id="selectAPIApiProductProdOfferOrgRela" parameterType="java.lang.String" resultMap="APIApiProductProdOfferOrgRelaMap">
+		select
+		ooor.ORG_ID,ooor.app_id,aspoop.api_id,aspoop.api_name,aspoop.PRODUCT_ID,aspoop.offer_prod_rela_id,aspoop.prod_offer_id,aspoop.offer_type,aspoop.prod_offer_name,aspoop.status_cd,
+		aspoop.eff_date,aspoop.exp_date,aspoop.offer_nbr,aspoop.brand_id,aspoop.serv_brand_id,aspoop.templet_id,aspoop.default_time_period,aspoop.ext_prod_offer_id,aspoop.exp_proc_method,
+		aspoop.value_added_flag,aspoop.prod_offer_initialamount,aspoop.expire_handle_condition,aspoop.common_region_id,aspoop.inner_offer_nbr,aspoop.cooperation_type
+		from (
+		select
+		aspot.api_id,aspot.api_name,aspot.PRODUCT_ID,aspot.offer_prod_rela_id,aspot.prod_offer_id,po.offer_type,po.prod_offer_name,po.status_cd,
+		po.eff_date,po.exp_date,po.offer_nbr,po.brand_id,po.serv_brand_id,po.templet_id,po.default_time_period,po.ext_prod_offer_id,po.exp_proc_method,
+		po.value_added_flag,po.prod_offer_initialamount,po.expire_handle_condition,po.common_region_id,po.inner_offer_nbr,po.cooperation_type
+		from (
+        select aspoo.api_id,aspoo.api_name,aspoo.PRODUCT_ID,aspoo.offer_prod_rela_id,aspoo.prod_offer_id,pt.pricing_target_id 
+        from(
+		select
+		aspo.api_id,aspo.api_name,aspo.PRODUCT_ID,aspo.offer_prod_rela_id,aspo.prod_offer_id,oprp.pricing_target_id
+		from (
+		select
+		ap.api_id,ap.service_id,ap.api_name,ap.PRODUCT_ID,opr.offer_prod_rela_id,opr.prod_offer_id
+		from (
+		select ass.api_id,ass.service_id,ass.api_name,ass.PRODUCT_ID from (
+		select sa.api_id,sa.service_id,sa.api_name,spr.PRODUCT_ID from (
+		select a.api_id,a.service_id,a.api_name from api a join service s on
+		a.service_id = s.service_id where a.api_state = 'D'
+		 
+			 and s.tenant_id=#{value}
+			 	 
+		)
+		sa join service_product_real spr on sa.service_id = spr.SERVICE_ID )
+		ass join product p on ass.PRODUCT_ID = p.product_id where p.status_cd =
+		'1000' and p.cooperation_type='13'
+		) ap join offer_prod_rel opr on ap.product_id = opr.product_id )
+		aspo join offer_prod_rel_pricing oprp on aspo.offer_prod_rela_id =
+		oprp.offer_prod_rela_id where oprp.status_cd = '10' )
+		aspoo JOIN pricing_target pt on aspoo.pricing_target_id=pt.pricing_target_id ) 
+		aspot JOIN prod_offer po on aspot.prod_offer_id = po.prod_offer_id where
+		po.status_cd = '1000' 
+		) aspoop JOIN org_offer_order_rela ooor on aspoop.prod_offer_id =
+		ooor.PROD_OFFER_ID
+	</select>
+	
+ 
+	<select id="selectKeyList" resultType="java.lang.String">
+		select CONCAT(CONCAT(ee.ORG_ID,ee.PROD_OFFER_ID),CONCAT(ee.pri_pricing_info_id,ee.price_id)) as idkey from (
+			select cc.*,dd.org_id from (select aa.*,bb.prod_offer_id from (select pri_pricing_info_id,price_id from component_price) aa left join PROD_OFFER_PRICING bb on aa.pri_pricing_info_id=bb.pricing_info_id) cc left join ORG_OFFER_ORDER_RELA dd on cc.prod_offer_id=dd.prod_offer_id) ee
+	</select>
+	
+	<insert id="insertBillingCycle" parameterType="com.ailk.eaap.op2.bo.BillingCycle">
+		delete from billing_cycle where org_id = #{orgId} and prod_offer_id = #{prodOfferId} and pricing_Info_Id = #{pricingInfoId} and component_price_id = #{componentPriceId} and
+			eff_date = #{effDate} and exp_date = #{expDate};
+		insert into billing_cycle(org_id, prod_offer_id, pricing_Info_Id, component_price_id, eff_date, exp_date, use_unit) values
+			(#{orgId}, #{prodOfferId}, #{pricingInfoId}, #{componentPriceId}, #{effDate}, #{expDate}, #{useUnit})
+	</insert>
+
+	<select id="selectAPIBillingCycleBean" parameterType="java.util.Map" resultType="java.util.HashMap">
+		select bc.EFF_DATE,bc.EXP_DATE,bc.USE_UNIT from billing_cycle bc
+		where bc.ORG_ID=#{orgId} 
+		and bc.PROD_OFFER_ID=#{prodOfferId}
+	    and bc.PRICING_INFO_ID=#{pricingInfoId} 
+	    and bc.COMPONENT_PRICE_ID=#{componentPriceId}
+	    and bc.API_ID=#{apiId}
+	</select>
+	
+	<!-- 查询结算信息-->
+	<select id="querySettlementInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+					settleInfo.PARTNER_CODE,
+					settleInfo.SERV_CODE,
+					settleInfo.RULE_NAME,
+					settleInfo.CHARGE_DIR,
+					settleInfo.MONEY_UNIT,
+					settleInfo.UP_VALUE,
+					settleInfo.DOWN_VALUE,
+					settleInfo.RATIO_NUMERATOR,
+					settleInfo.RATIO_DEMOMINATOR,
+					asrc.CYCLE_TYPE,
+					asrc.CYCLE_COUNT
+				FROM
+					(
+						SELECT
+							sr.PARTNER_CODE,
+							sr.SERV_CODE,
+							sr.RULE_NAME,
+							sr.CHARGE_DIR,
+							sr.MONEY_UNIT,
+							src.UP_VALUE,
+							src.DOWN_VALUE,
+							src.RATIO_NUMERATOR,
+							src.RATIO_DEMOMINATOR,
+							src.RULE_ID
+						FROM
+							settle_rule_condition src 
+				JOIN settle_rule sr ON src.RULE_ID = sr.RULE_ID 
+				 
+					 where src.tenant_id=#{value}
+			 
+			) settleInfo
+		JOIN api_settle_rule_cycle asrc ON settleInfo.RULE_ID = asrc.RULE_ID
+	</select>
+	
+</mapper>

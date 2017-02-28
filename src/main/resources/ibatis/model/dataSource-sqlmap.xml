@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Thu Aug 04 17:21:38 CST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="o2p-serviceAgent-core">
+
+	
+	
+	<resultMap id="dataSourceBean" type="com.ailk.eaap.op2.bo.JdbcDataSource">
+	  <result property="dataSourceId" column="data_source_id" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="dataSourceName" column="data_source_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+	  <result property="isBeginInit" column="isBeginInit" jdbcType="VARCHAR"/>
+	  <result property="driverClassName" column="driverclassname" jdbcType="VARCHAR"/>
+	  <result property="url" column="url" jdbcType="VARCHAR"/>
+	  <result property="username" column="username" jdbcType="VARCHAR"/>
+	  <result property="password" column="passwd" jdbcType="VARCHAR"/>
+	  <result property="defaultAutoCommit" column="defaultautocommit" javaType="java.lang.Boolean" jdbcType="VARCHAR"/>
+	  <result property="defaultReadOnly" column="defaultreadonly" javaType="java.lang.Boolean" jdbcType="VARCHAR"/>
+	  <result property="defaultTransactionIsolation" column="defaulttransactionisolation" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="initialSize" column="initialsize" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="maxActive" column="maxactive" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="maxIdle" column="maxidle" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="minIdle" column="minidle" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="maxWait" column="maxwait" javaType="java.lang.Long" jdbcType="VARCHAR"/>
+	  <result property="validationQuery" column="validationquery" jdbcType="VARCHAR"/>
+	  <result property="testOnBorrow" column="testonborrow" javaType="java.lang.Boolean" jdbcType="VARCHAR"/>
+	  <result property="testOnReturn" column="testonreturn" javaType="java.lang.Boolean" jdbcType="VARCHAR"/>
+	  <result property="testWhileIdle" column="testwhileidle" javaType="java.lang.Boolean" jdbcType="VARCHAR"/>
+	  <result property="timeBetweenEvictionRunsMillis" column="timebetweenevictionrunsmillis" javaType="java.lang.Long" jdbcType="VARCHAR"/>
+	  <result property="numTestsPerEvictionRun" column="numtestsperevictionrun" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="minEvictableIdleTimeMillis" column="minevictableidletimemillis" javaType="java.lang.Long" jdbcType="VARCHAR"/>
+	  <result property="poolPreparedStatements" column="poolpreparedstatements" javaType="java.lang.Boolean" jdbcType="VARCHAR"/>
+	  <result property="maxOpenPreparedStatements" column="maxopenpreparedstatements" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	  <result property="accessToUnderlyingConnectionAllowed" column="accesstounderlyingconnectional" javaType="java.lang.Boolean" jdbcType="VARCHAR"/>
+	  <result property="jndiName" column="jndi_name" jdbcType="VARCHAR"/>
+	  <result property="tenantId" column="tenant_id" javaType="java.lang.Integer" jdbcType="VARCHAR"/>
+	</resultMap>	
+	
+	
+	<resultMap id="csvTemplateBean" type="com.ailk.eaap.op2.bo.CsvTemplate">
+	  <result property="csvTemplateId" column="csv_template_id" jdbcType="DECIMAL"/>
+	  <result property="csvFileName" column="csv_file_name" jdbcType="VARCHAR"/>
+	  <result property="fieldSeparator" column="field_separator" jdbcType="VARCHAR"/>
+	  <result property="firstLineType" column="first_line_type" jdbcType="DECIMAL"/>
+	  <result property="isFileNameAddDate" column="is_file_name_add_date" jdbcType="VARCHAR"/>
+	  <result property="dateFormat" column="date_format" jdbcType="VARCHAR"/>
+	  <result property="fileNameAndDateSeparator" column="file_name_and_date_separator" jdbcType="VARCHAR"/>
+	  <result property="newLineCharacter" column="new_line_character" jdbcType="VARCHAR"/>
+	  <result property="isTextfieldAddQuoteMark" column="is_textfield_add_quote_mark" jdbcType="VARCHAR"/>
+	  <result property="fileCharset" column="file_charset" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<!-- 查询数据源路由对象 -->
+	<select id="queryAllDataSourceRoute" resultType="java.util.HashMap">
+		SELECT CONVERT(DATA_SOURCE_ROUTE_ID, CHAR) DATA_SOURCE_ROUTE_ID,DECISION_RULE,PRI, CONVERT(DATA_SOURCE_ID, CHAR) DATA_SOURCE_ID 
+		FROM data_source_route WHERE state='A' ORDER BY pri DESC
+	</select>
+	
+	<!-- 查询数据源,数据源路由对象 -->
+	<select id="queryMultiDataSourceRoute" resultType="java.util.HashMap">
+		select res.* from (
+			SELECT DATA_SOURCE_ROUTE_ID,DECISION_RULE,DATA_SOURCE_NAME,IS_DEFAULT,CONVERT(COMPONENT_ID, CHAR) COMPONENT_ID,TAB_SUFFIX ,a.pri
+					FROM data_source_route a,data_source b 
+					WHERE a.data_source_id=b.data_source_id AND a.state='A' And  b.isBeginInit='Y' 
+					AND ( b.is_default is null or b.is_default != '0'
+					 ) and b.tenant_id=#{value}
+			union 
+			SELECT 0 as DATA_SOURCE_ROUTE_ID,'' as DECISION_RULE,DATA_SOURCE_NAME,IS_DEFAULT,CONVERT(COMPONENT_ID, CHAR) COMPONENT_ID,TAB_SUFFIX ,0 as pri
+					FROM data_source d
+					WHERE d.is_default='0' and  d.isBeginInit='Y' and d.tenant_id=#{value}
+		) res ORDER BY res.pri DESC
+	</select>
+	
+	<select id="getAllDataSource" parameterType="java.lang.String" resultMap="dataSourceBean">
+		SELECT
+		ds.data_source_id,
+		ds.data_source_name,
+		ds.isBeginInit,
+		ds_db.driverclassname,
+		ds_db.url,
+		ds_db.username,
+		ds_db.passwd,
+		ds_db.defaultautocommit,
+		ds_db.defaultreadonly,
+		ds_db.defaulttransactionisolation,
+		ds_db.initialsize,
+		ds_db.maxactive,
+		ds_db.maxidle,
+		ds_db.minidle,
+		ds_db.maxwait,
+		ds_db.validationquery,
+		ds_db.testonborrow,
+		ds_db.testonreturn,
+		ds_db.testwhileidle,
+		ds_db.timebetweenevictionrunsmillis,
+		ds_db.numtestsperevictionrun,
+		ds_db.minevictableidletimemillis,
+		ds_db.poolpreparedstatements,
+		ds_db.maxopenpreparedstatements,
+		ds_db.accesstounderlyingconnectional,
+		ds_jn.jndi_name,
+		ds.tenant_id
+		FROM
+			data_source ds
+		LEFT JOIN data_source_dbcp ds_db ON ds.data_source_id = ds_db.data_source_id and ds.tenant_id=ds_db.tenant_id 
+		LEFT JOIN data_source_jndi ds_jn ON ds.data_source_id = ds_jn.data_source_id and ds.tenant_id=ds_jn.tenant_id 
+		where ds.tenant_id=#{value} order by ds.data_source_id
+	</select>
+	
+	<select id="getAllCsvTemplate" parameterType="java.lang.String" resultMap="csvTemplateBean">
+		select * from csv_template where tenant_id=#{value}
+	</select>
+</mapper>

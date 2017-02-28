@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+"http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<!-- 安全扫描警告，该接口暂时没有使用到，暂且注释
+	<bean id="cacheRefresServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" >  
+        <property name="service" ref="cacheService" />  
+        <property name="serviceInterface" value="com.asiainfo.integretion.o2p.cachecontroller.smo.ICacheService" />  
+    </bean>
+	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">  
+        <property name="mappings">    
+            <props>    
+                  <prop key="/cache.service">cacheRefresServiceExporter</prop>    
+            </props>    
+        </property>    
+    </bean> -->
+</beans>
